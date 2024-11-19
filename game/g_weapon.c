@@ -344,10 +344,29 @@ void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 
 void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
 {
-	edict_t	*bolt;
+	edict_t	*bolt, * boltLeft, * boltRight, * boltUp, * boltDown;
 	trace_t	tr;
 
 	VectorNormalize (dir);
+	vec3_t up = { 0, 0, 1 };
+	vec3_t right = { 1, 0, 0 };
+	vec3_t dirLeft, dirRight, dirUp, dirDown;
+	VectorCopy(dir, dirLeft);
+	VectorCopy(dir, dirRight);
+	VectorCopy(dir, dirUp);
+	VectorCopy(dir, dirDown);
+	// Offset angles to the left and right
+	RotatePointAroundVector(dirLeft, up, dir, -10);//dirLeft[1] -= 10; Adjust angle slightly to the left
+	RotatePointAroundVector(dirRight, up, dir, 10);//dirRight[1] += 10; Adjust angle slightly to the right
+	// Rotate for up and down
+	RotatePointAroundVector(dirUp, right, dir, -10);    // 10 degrees up
+	RotatePointAroundVector(dirDown, right, dir, 10);   // 10 degrees down
+
+	// Normalize directions after adjusting angles
+	VectorNormalize(dirLeft);
+	VectorNormalize(dirRight);
+	VectorNormalize(dirUp);
+	VectorNormalize(dirDown);
 
 	bolt = G_Spawn();
 	bolt->svflags = SVF_DEADMONSTER;
@@ -378,8 +397,113 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 		bolt->spawnflags = 1;
 	gi.linkentity (bolt);
 
+	// Fire left bolt
+	boltLeft = G_Spawn();
+	boltLeft->svflags = SVF_DEADMONSTER;
+	VectorCopy(start, boltLeft->s.origin);
+	VectorCopy(start, boltLeft->s.old_origin);
+	vectoangles(dirLeft, boltLeft->s.angles);
+	VectorScale(dirLeft, speed, boltLeft->velocity);
+	boltLeft->movetype = MOVETYPE_FLYMISSILE;
+	boltLeft->clipmask = MASK_SHOT;
+	boltLeft->solid = SOLID_BBOX;
+	boltLeft->s.effects |= effect;
+	VectorClear(boltLeft->mins);
+	VectorClear(boltLeft->maxs);
+	boltLeft->s.modelindex = gi.modelindex("models/objects/laser/tris.md2");
+	boltLeft->s.sound = gi.soundindex("misc/lasfly.wav");
+	boltLeft->owner = self;
+	boltLeft->touch = blaster_touch;
+	boltLeft->nextthink = level.time + 2;
+	boltLeft->think = G_FreeEdict;
+	boltLeft->dmg = damage;
+	boltLeft->classname = "bolt";
+	if (hyper)
+		boltLeft->spawnflags = 1;
+	gi.linkentity(boltLeft);
+
+	// Fire right bolt
+	boltRight = G_Spawn();
+	boltRight->svflags = SVF_DEADMONSTER;
+	VectorCopy(start, boltRight->s.origin);
+	VectorCopy(start, boltRight->s.old_origin);
+	vectoangles(dirRight, boltRight->s.angles);
+	VectorScale(dirRight, speed, boltRight->velocity);
+	boltRight->movetype = MOVETYPE_FLYMISSILE;
+	boltRight->clipmask = MASK_SHOT;
+	boltRight->solid = SOLID_BBOX;
+	boltRight->s.effects |= effect;
+	VectorClear(boltRight->mins);
+	VectorClear(boltRight->maxs);
+	boltRight->s.modelindex = gi.modelindex("models/objects/laser/tris.md2");
+	boltRight->s.sound = gi.soundindex("misc/lasfly.wav");
+	boltRight->owner = self;
+	boltRight->touch = blaster_touch;
+	boltRight->nextthink = level.time + 2;
+	boltRight->think = G_FreeEdict;
+	boltRight->dmg = damage;
+	boltRight->classname = "bolt";
+	if (hyper)
+		boltRight->spawnflags = 1;
+	gi.linkentity(boltRight);
+
+	//Fire up bolt
+	boltUp = G_Spawn();
+	boltUp->svflags = SVF_DEADMONSTER;
+	VectorCopy(start, boltUp->s.origin);
+	VectorCopy(start, boltUp->s.old_origin);
+	vectoangles(dirUp, boltUp->s.angles);
+	VectorScale(dirUp, speed, boltUp->velocity);
+	boltUp->movetype = MOVETYPE_FLYMISSILE;
+	boltUp->clipmask = MASK_SHOT;
+	boltUp->solid = SOLID_BBOX;
+	boltUp->s.effects |= effect;
+	VectorClear(boltUp->mins);
+	VectorClear(boltUp->maxs);
+	boltUp->s.modelindex = gi.modelindex("models/objects/laser/tris.md2");
+	boltUp->s.sound = gi.soundindex("misc/lasfly.wav");
+	boltUp->owner = self;
+	boltUp->touch = blaster_touch;
+	boltUp->nextthink = level.time + 2;
+	boltUp->think = G_FreeEdict;
+	boltUp->dmg = damage;
+	boltUp->classname = "bolt";
+	if (hyper)
+		boltUp->spawnflags = 1;
+	gi.linkentity(boltUp);
+
+	//Fire down bolt
+	//Up bolt
+	boltDown = G_Spawn();
+	boltDown->svflags = SVF_DEADMONSTER;
+	VectorCopy(start, boltDown->s.origin);
+	VectorCopy(start, boltDown->s.old_origin);
+	vectoangles(dirDown, boltDown->s.angles);
+	VectorScale(dirDown, speed, boltDown->velocity);
+	boltDown->movetype = MOVETYPE_FLYMISSILE;
+	boltDown->clipmask = MASK_SHOT;
+	boltDown->solid = SOLID_BBOX;
+	boltDown->s.effects |= effect;
+	VectorClear(boltDown->mins);
+	VectorClear(boltDown->maxs);
+	boltDown->s.modelindex = gi.modelindex("models/objects/laser/tris.md2");
+	boltDown->s.sound = gi.soundindex("misc/lasfly.wav");
+	boltDown->owner = self;
+	boltDown->touch = blaster_touch;
+	boltDown->nextthink = level.time + 2;
+	boltDown->think = G_FreeEdict;
+	boltDown->dmg = damage;
+	boltDown->classname = "bolt";
+	if (hyper)
+		boltDown->spawnflags = 1;
+	gi.linkentity(boltDown);
+
 	if (self->client)
 		check_dodge (self, bolt->s.origin, dir, speed);
+		check_dodge(self, boltLeft->s.origin, dirLeft, speed);
+		check_dodge(self, boltRight->s.origin, dirRight, speed);
+		check_dodge(self, boltUp->s.origin, dirUp, speed);
+		check_dodge(self, boltDown->s.origin, dirDown, speed);
 
 	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT);
 	if (tr.fraction < 1.0)
