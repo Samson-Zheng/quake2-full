@@ -862,6 +862,15 @@ typedef struct
 	int			helpchanged;
 
 	qboolean	spectator;			// client is a spectator
+
+	//======================
+	//   Fantasy Mod Stuff
+	//======================
+	int playerLevel;
+	int playerEXP;
+	int playerMP;
+	int maxMP;
+
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns
@@ -959,6 +968,7 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
+
 };
 
 
@@ -1111,3 +1121,10 @@ struct edict_s
 	monsterinfo_t	monsterinfo;
 };
 
+//================================
+//     Fantasy Mod Stuff
+//================================
+#define STAT_PLAYER_LEVEL 18
+#define STAT_PLAYER_EXP 19
+#define STAT_PLAYER_MP 20
+#define STAT_PLAYER_MAX_MP 21
