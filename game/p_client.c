@@ -627,6 +627,11 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.max_slugs		= 50;
 
 	client->pers.connected = true;
+
+	client->pers.playerLevel = 69;
+	client->pers.playerEXP = 0;
+	client->pers.playerMP = 10;
+	client->pers.maxMP = 10;
 }
 
 
@@ -1344,8 +1349,6 @@ void ClientBegin (edict_t *ent)
 			gi.bprintf (PRINT_HIGH, "%s entered the game\n", ent->client->pers.netname);
 		}
 	}
-
-	// make sure all view stuff is valid
 	ClientEndServerFrame (ent);
 }
 

@@ -520,6 +520,23 @@ void G_SetStats (edict_t *ent)
 		ent->client->ps.stats[STAT_HELPICON] = 0;
 
 	ent->client->ps.stats[STAT_SPECTATOR] = 0;
+
+
+	// Player Level
+	ent->client->ps.stats[STAT_PLAYER_LEVEL] = ent->client->pers.playerLevel;
+
+	// Player EXP
+	ent->client->ps.stats[STAT_PLAYER_EXP] = ent->client->pers.playerEXP;
+
+	// Player MP
+	ent->client->ps.stats[STAT_PLAYER_MP] = ent->client->pers.playerMP;
+	ent->client->ps.stats[STAT_PLAYER_MAX_MP] = ent->client->pers.maxMP;
+
+	Com_Printf("Player Level: %d, MP: %d, EXP: %d, Max MP: %d\n",
+		ent->client->ps.stats[STAT_PLAYER_LEVEL],
+		ent->client->ps.stats[STAT_PLAYER_MP],
+		ent->client->ps.stats[STAT_PLAYER_EXP],
+		ent->client->ps.stats[STAT_PLAYER_MAX_MP]);
 }
 
 /*
@@ -568,4 +585,5 @@ void G_SetSpectatorStats (edict_t *ent)
 	else
 		cl->ps.stats[STAT_CHASE] = 0;
 }
+
 
