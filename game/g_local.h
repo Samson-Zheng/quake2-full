@@ -1124,7 +1124,13 @@ struct edict_s
 //================================
 //     Fantasy Mod Stuff
 //================================
-#define STAT_PLAYER_LEVEL 18
-#define STAT_PLAYER_EXP 19
-#define STAT_PLAYER_MP 20
-#define STAT_PLAYER_MAX_MP 21
+#define STAT_PLAYER_LEVEL 100//18
+#define STAT_PLAYER_EXP 101//19
+#define STAT_PLAYER_MP 102//20
+#define STAT_PLAYER_MAX_MP 103//21
+#define HUD_PLAYER_LEVEL_X 104//22
+#define HUD_PLAYER_LEVEL_Y 105//23
+#define HUD_PLAYER_MP_X 106//24
+#define HUD_PLAYER_MP_Y 107//25
+#define HUD_PLAYER_EXP_X 108//26
+#define HUD_PLAYER_EXP_Y 109//27
