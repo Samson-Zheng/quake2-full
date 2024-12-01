@@ -1134,3 +1134,9 @@ struct edict_s
 #define HUD_PLAYER_MP_Y 107//25
 #define HUD_PLAYER_EXP_X 108//26
 #define HUD_PLAYER_EXP_Y 109//27
+
+// Declaration for CheckPlayerLevelUp
+void CheckPlayerLevelUp(edict_t* ent);
+
+// Declaration for RewardPlayerEXP
+void RewardPlayerEXP(edict_t* attacker);

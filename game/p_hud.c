@@ -334,7 +334,7 @@ void HelpComputer(edict_t* ent)
 		"xv 32 yv 8 picn help "                   // Background image
 		"xv 202 yv 12 string2 \"LVL: %d\" "  // Title
 		"xv 0 yv 24 cstring2 \"%s\" "		// level name
-		"xv 50 yv 50 string2 \"EXP: %d\" "        // Player Experience
+		"xv 50 yv 50 string2 \"EXP: %d/5\" "        // Player Experience
 		"xv 50 yv 70 string2 \"MP: %d/%d\" ",     // Player MP and Max MP
 		//"xv 0 yv 110 cstring2 \"%s\" "		// QUEST INFO
 		//"xv 50 yv 164 string2 \" kills     goals    secrets\" " THE 3 QUESTS HERE

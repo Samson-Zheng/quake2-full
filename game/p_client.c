@@ -1807,3 +1807,18 @@ void ClientBeginServerFrame (edict_t *ent)
 
 	client->latched_buttons = 0;
 }
+
+void CheckPlayerLevelUp(edict_t* player) {
+	int expForNextLevel = 5; //+ (player->client->pers.playerLevel * 50); // Example scaling logic
+
+	if (player->client->pers.playerEXP >= expForNextLevel) {
+		player->client->pers.playerEXP -= expForNextLevel; // Deduct excess EXP
+		player->client->pers.playerLevel++; // Increase level
+		player->client->pers.maxMP += 10; // Increase max MP as a reward (optional)
+
+		Com_Printf("Level up! Player is now Level %d\n", player->client->pers.playerLevel);
+
+		// Optional: Fully restore MP on level-up
+		player->client->pers.playerMP = player->client->pers.maxMP;
+	}
+}

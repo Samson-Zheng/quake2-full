@@ -738,3 +738,16 @@ void swimmonster_start (edict_t *self)
 	self->think = swimmonster_start_go;
 	monster_start (self);
 }
+
+//============================================================================
+//					FANTASY MOD STUFF
+//============================================================================
+
+void RewardPlayerEXP(edict_t* attacker) {
+	if (attacker && attacker->client) { // Ensure the attacker is a player
+		attacker->client->pers.playerEXP += 1; // Award 1 EXP
+		Com_Printf("Player gained 1 EXP! Total EXP: %d\n", attacker->client->pers.playerEXP);
+
+		CheckPlayerLevelUp(attacker); // Call level-up logic if needed
+	}
+}
