@@ -628,7 +628,8 @@ void InitClientPersistant (gclient_t *client)
 
 	client->pers.connected = true;
 
-	client->pers.playerLevel = 69;
+	//Fantasy Mod Stuff
+	client->pers.playerLevel = 1;
 	client->pers.playerEXP = 0;
 	client->pers.playerMP = 10;
 	client->pers.maxMP = 10;
