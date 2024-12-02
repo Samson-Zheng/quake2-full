@@ -1838,7 +1838,6 @@ void CheckPlayerLevelUp(edict_t* player) {
 
 void CheckMagicCast(edict_t* player) {
 	//int castGoal = 5; //+ (player->client->pers.playerLevel * 50); // Example scaling logic
-	gi.cprintf(player, PRINT_HIGH, "Checking magic casts: %d\n", player->client->pers.magicCasts);
 	// Check if the player completed the level quest
 	if (player->client->pers.magicCasts >= 5 && !player->client->pers.quest3Complete) {
 		player->client->pers.quest3Complete = true;
@@ -1847,11 +1846,13 @@ void CheckMagicCast(edict_t* player) {
 }
 
 void CastSpell1(edict_t* player) {
+	if (player->client->ps.stats[STAT_PLAYER_MP] < 1) {
+		gi.cprintf(player, PRINT_HIGH, "Not enough mana to cast the spell!\n");
+		return;
+	}
+	player->client->pers.magicCasts += 1;
+	player->client->pers.playerMP -= 1;  //mana deduction
 
-	// Deduct mana or other resources
-	player->client->pers.playerMP -= 10;  //mana deduction
-
-	// Spawn the rocket as above...
 	// Get the player's current position and view direction
 	vec3_t start;
 	vec3_t aimdir;
@@ -1869,3 +1870,100 @@ void CastSpell1(edict_t* player) {
 	CheckMagicCast(player);
 }
 
+void CastSpell2(edict_t* player) {
+	if (player->client->ps.stats[STAT_PLAYER_MP] < 1) {
+		gi.cprintf(player, PRINT_HIGH, "Not enough mana to cast the spell!\n");
+		return;
+	}
+	player->client->pers.magicCasts += 1;
+	player->client->pers.playerMP -= 1;  //mana deduction
+
+	// Get the player's current position and view direction
+	vec3_t start;
+	vec3_t aimdir;
+	VectorCopy(player->s.origin, start);            // Get player's position
+	AngleVectors(player->client->ps.viewangles, aimdir, NULL, NULL); // Get player's aim direction
+
+	// Set the parameters for the grenade (you can adjust these as needed)
+	int damage = 100;         // Set the damage of the grenade
+	int speed = 800;          // Set the speed of the grenade
+	float timer = 3.0f;       // Set the timer (in seconds)
+	float damage_radius = 200.0f; // Set the explosion radius
+
+	// Call fire_grenade to spawn the grenade
+	fire_rocket(player, start, aimdir, damage, speed, timer, damage_radius);
+	CheckMagicCast(player);
+}
+
+void CastSpell3(edict_t* player) {
+	if (player->client->ps.stats[STAT_PLAYER_MP] < 1) {
+		gi.cprintf(player, PRINT_HIGH, "Not enough mana to cast the spell!\n");
+		return;
+	}
+	player->client->pers.magicCasts += 1;
+	player->client->pers.playerMP -= 1;  //mana deduction
+
+	// Get the player's current position and view direction
+	vec3_t start;
+	vec3_t aimdir;
+	VectorCopy(player->s.origin, start);            // Get player's position
+	AngleVectors(player->client->ps.viewangles, aimdir, NULL, NULL); // Get player's aim direction
+
+	// Set the parameters for the grenade (you can adjust these as needed)
+	int damage = 100;         // Set the damage of the grenade
+	int kick = 1;
+
+	// Call fire_grenade to spawn the grenade
+	fire_rail(player, start, aimdir, damage, 1);
+	CheckMagicCast(player);
+}
+
+void CastSpell4(edict_t* player) {
+	if (player->client->ps.stats[STAT_PLAYER_MP] < 1) {
+		gi.cprintf(player, PRINT_HIGH, "Not enough mana to cast the spell!\n");
+		return;
+	}
+	player->client->pers.magicCasts += 1;
+	player->client->pers.playerMP -= 1;  //mana deduction
+
+	// Get the player's current position and view direction
+	vec3_t start;
+	vec3_t aimdir;
+	VectorCopy(player->s.origin, start);            // Get player's position
+	AngleVectors(player->client->ps.viewangles, aimdir, NULL, NULL); // Get player's aim direction
+
+	// Set the parameters for the grenade (you can adjust these as needed)
+	int damage = 100;         // Set the damage of the grenade
+	int speed = 800;          // Set the speed of the grenade
+	float damage_radius = 200.0f; // Set the explosion radius
+
+	// Call fire_grenade to spawn the grenade
+	fire_bfg(player, start, aimdir, damage, speed, damage_radius);
+	CheckMagicCast(player);
+}
+
+void CastSpell5(edict_t* player) {
+	if (player->client->ps.stats[STAT_PLAYER_MP] < 1) {
+		gi.cprintf(player, PRINT_HIGH, "Not enough mana to cast the spell!\n");
+		return;
+	}
+	player->client->pers.magicCasts += 1;
+	player->client->pers.playerMP -= 1;  //mana deduction
+
+	// Get the player's current position and view direction
+	vec3_t start;
+	vec3_t aimdir;
+	VectorCopy(player->s.origin, start);            // Get player's position
+	AngleVectors(player->client->ps.viewangles, aimdir, NULL, NULL); // Get player's aim direction
+
+	// Set the parameters for the grenade (you can adjust these as needed)
+	int damage = 100;         // Set the damage of the grenade
+	int kick = 1;
+	int hspread = 25;
+	int vspread = 25;
+	int count = 50;
+	int mod = 2;
+	// Call fire_grenade to spawn the grenade
+	fire_shotgun(player, start, aimdir, damage, kick, hspread, vspread, count, mod);
+	CheckMagicCast(player);
+}
