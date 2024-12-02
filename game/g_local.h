@@ -874,8 +874,10 @@ typedef struct
 	int questKills;         // Current kills for the quest
 	int questKillTarget;    // Kills required to complete the quest
 	qboolean quest1Complete; // Whether the quest 1 is completed
-	int questLevelTarget; //Level targer
-	qboolean quest2Complete; // Wheter the quest 2 is completed
+	int questLevelTarget; //Level target
+	qboolean quest2Complete; // Whether the quest 2 is completed
+	int magicCasts; // Current number of magic casted
+	qboolean quest3Complete; // Whether the quest 3 is completed
 
 } client_persistant_t;
 
@@ -1136,10 +1138,8 @@ struct edict_s
 #define STAT_PLAYER_MAX_MP 21//21
 #define QUEST1 22
 #define QUEST1Goal 23
-#define QUEST2 24
-#define QUEST2Goal 25
-#define QUEST3 26
-#define QUEST3Goal 27
+#define QUEST2Goal 24
+#define QUEST3 25
 // Declaration for CheckPlayerLevelUp
 void CheckPlayerLevelUp(edict_t* ent);
 

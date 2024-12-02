@@ -759,7 +759,7 @@ void RewardPlayerEXP(edict_t* attacker) {
 				// Check if the quest is complete
 				if (client->pers.questKills >= client->pers.questKillTarget) {
 					client->pers.quest1Complete = true;
-					Com_Printf("Quest Complete! You have reached %d kills.\n", client->pers.questKillTarget);
+					Com_Printf("Quest 1 Complete! You have reached %d kills.\n", client->pers.questKillTarget);
 				}
 			}
 		}

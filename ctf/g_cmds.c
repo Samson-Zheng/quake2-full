@@ -798,7 +798,12 @@ void Cmd_Players_f (edict_t *ent)
 
 /*
 =================
-Cmd_Wave_f
+Cmd_Wave_f 
+=================
+*/
+/*
+=================
+FANTASY MOD STUFF
 =================
 */
 void Cmd_Wave_f (edict_t *ent)

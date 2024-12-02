@@ -340,7 +340,7 @@ void HelpComputer(edict_t* ent)
 		"xv 50 yv 70 string2 \"MP: %d/%d\" "     // Player MP and Max MP
 		"xv 0 yv 110 cstring2 \"%s\" "		// QUESTS INFO
 		"xv 50 yv 164 string2 \"Quest 1   Quest 2   Quest 3\" "
-		"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       0/1\" ",
+		"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       %i/5\" ",
 		//"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       %i/%i\" ",
 		//ent->client->pers.playerLevel,
 		ent->client->ps.stats[STAT_PLAYER_LEVEL],
@@ -352,7 +352,8 @@ void HelpComputer(edict_t* ent)
 		ent->client->ps.stats[QUEST1],
 		ent->client->ps.stats[QUEST1Goal],
 		ent->client->ps.stats[STAT_PLAYER_LEVEL],
-		ent->client->ps.stats[QUEST2Goal]);
+		ent->client->ps.stats[QUEST2Goal],
+		ent->client->ps.stats[QUEST3]);
 
 	gi.WriteByte(svc_layout);
 	gi.WriteString(string);
@@ -562,6 +563,8 @@ void G_SetStats(edict_t* ent)
 	ent->client->ps.stats[QUEST1Goal] = ent->client->pers.questKillTarget;
 	//QUEST2
 	ent->client->ps.stats[QUEST2Goal] = ent->client->pers.questLevelTarget;
+	//QUEST3
+	ent->client->ps.stats[QUEST3] = ent->client->pers.magicCasts;
 
 }
 
