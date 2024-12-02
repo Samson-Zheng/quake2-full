@@ -754,36 +754,27 @@ void Cmd_Wave_f (edict_t *ent)
 		//gi.cprintf (ent, PRINT_HIGH, "flipoff\n");
 		//ent->s.frame = FRAME_flip01-1;
 		//ent->client->anim_end = FRAME_flip12;
-		if (ent->client->ps.stats[STAT_PLAYER_MP] < 10) {
-			// Provide feedback (e.g., "Not enough mana")
-			gi.cprintf(ent, PRINT_HIGH, "Not enough mana to cast the spell!\n");
-			return;
-		}
-		//gi.cprintf(ent, PRINT_HIGH, "Holy Grenade Spell\n");
-		Com_Printf("Holy Grenade Spell\n");
+		gi.cprintf(ent, PRINT_HIGH, "Holy Grenade Spell\n");
 		CastSpell1(ent);
-		ent->client->pers.magicCasts += 1;
 		break;
 	case 1:
 		//gi.cprintf (ent, PRINT_HIGH, "salute\n");
 		//ent->s.frame = FRAME_salute01-1;
 		//ent->client->anim_end = FRAME_salute11;
-		gi.cprintf(ent, PRINT_HIGH, "Spell 2\n");
-		ent->client->pers.magicCasts += 1;
+		gi.cprintf(ent, PRINT_HIGH, "Red Rocket Spell\n");
+		CastSpell2(ent);
 		break;
 	case 2:
 		//gi.cprintf (ent, PRINT_HIGH, "taunt\n");
 		//ent->s.frame = FRAME_taunt01-1;
 		//ent->client->anim_end = FRAME_taunt17;
 		gi.cprintf(ent, PRINT_HIGH, "Spell 3\n");
-		ent->client->pers.magicCasts += 1;
 		break;
 	case 3:
 		//gi.cprintf (ent, PRINT_HIGH, "wave\n");
 		//ent->s.frame = FRAME_wave01-1;
 		//ent->client->anim_end = FRAME_wave11;
 		gi.cprintf(ent, PRINT_HIGH, "Spell 4\n");
-		ent->client->pers.magicCasts += 1;
 		break;
 	case 4:
 	default:
@@ -791,7 +782,6 @@ void Cmd_Wave_f (edict_t *ent)
 		//ent->s.frame = FRAME_point01-1;
 		//ent->client->anim_end = FRAME_point12;
 		gi.cprintf(ent, PRINT_HIGH, "Spell 5\n");
-		ent->client->pers.magicCasts += 1;
 		break;
 	}
 }
