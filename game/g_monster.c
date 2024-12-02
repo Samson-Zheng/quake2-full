@@ -749,5 +749,19 @@ void RewardPlayerEXP(edict_t* attacker) {
 		Com_Printf("Player gained 1 EXP! Total EXP: %d\n", attacker->client->pers.playerEXP);
 
 		CheckPlayerLevelUp(attacker); // Call level-up logic if needed
+		if (attacker && attacker->client) {
+			// Increment quest kill count
+			gclient_t* client = attacker->client;
+
+			if (!client->pers.quest1Complete) {
+				client->pers.questKills++;
+
+				// Check if the quest is complete
+				if (client->pers.questKills >= client->pers.questKillTarget) {
+					client->pers.quest1Complete = true;
+					Com_Printf("Quest Complete! You have reached %d kills.\n", client->pers.questKillTarget);
+				}
+			}
+		}
 	}
 }

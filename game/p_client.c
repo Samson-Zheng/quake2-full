@@ -633,6 +633,12 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.playerEXP = 0;
 	client->pers.playerMP = 10;
 	client->pers.maxMP = 10;
+	client->pers.questKills = 0;         // Reset quest progress
+	client->pers.questKillTarget = 5;  // Set required kills for the quest
+	client->pers.quest1Complete = false; // Quest not completed initially
+	client->pers.questLevelTarget = 3;       // Target level for the quest
+	client->pers.quest1Complete = false; // Quest not completed initially
+
 }
 
 
@@ -1808,6 +1814,7 @@ void ClientBeginServerFrame (edict_t *ent)
 	client->latched_buttons = 0;
 }
 
+// FANTASY MOD STUFF
 void CheckPlayerLevelUp(edict_t* player) {
 	int expForNextLevel = 5; //+ (player->client->pers.playerLevel * 50); // Example scaling logic
 
@@ -1821,4 +1828,11 @@ void CheckPlayerLevelUp(edict_t* player) {
 		// Optional: Fully restore MP on level-up
 		player->client->pers.playerMP = player->client->pers.maxMP;
 	}
+	// Check if the player completed the level quest
+	if (player->client->pers.playerLevel >= player->client->pers.questLevelTarget &&
+		!player->client->pers.quest2Complete) {
+		player->client->pers.quest2Complete = true;
+		Com_Printf("Quest Complete! You reached Level %d!\n", player->client->pers.questLevelTarget);
+	}
 }
+
