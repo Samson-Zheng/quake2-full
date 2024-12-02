@@ -312,8 +312,10 @@ void HelpComputer(edict_t* ent)
 		sk = "hard";
 	else
 		sk = "hard+";
-
 	// send the layout
+	char* questInfo;
+	questInfo = "Clear your surroundings \nStrengthen yourself \nMaster your magic";
+	//You awoke with no memories of yourself surrounded by enemies and your innate magic skill. You must first clear your surroundings, strengthen yourself, and test your magic
 	Com_sprintf(string, sizeof(string),
 		//"xv 32 yv 8 picn help "			// background
 		//"xv 202 yv 12 string2 \"%s\" "		//skill
@@ -334,15 +336,23 @@ void HelpComputer(edict_t* ent)
 		"xv 32 yv 8 picn help "                   // Background image
 		"xv 202 yv 12 string2 \"LVL: %d\" "  // Title
 		"xv 0 yv 24 cstring2 \"%s\" "		// level name
-		"xv 50 yv 50 string2 \"EXP: %d\" "        // Player Experience
-		"xv 50 yv 70 string2 \"MP: %d/%d\" ",     // Player MP and Max MP
-		//"xv 0 yv 110 cstring2 \"%s\" "		// QUEST INFO
-		//"xv 50 yv 164 string2 \" kills     goals    secrets\" " THE 3 QUESTS HERE
+		"xv 50 yv 50 string2 \"EXP: %d/5\" "        // Player Experience
+		"xv 50 yv 70 string2 \"MP: %d/%d\" "     // Player MP and Max MP
+		"xv 0 yv 110 cstring2 \"%s\" "		// QUESTS INFO
+		"xv 50 yv 164 string2 \"Quest 1   Quest 2   Quest 3\" "
+		"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       0/1\" ",
+		//"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       %i/%i\" ",
+		//ent->client->pers.playerLevel,
 		ent->client->ps.stats[STAT_PLAYER_LEVEL],
 		level.level_name,
 		ent->client->ps.stats[STAT_PLAYER_EXP],
 		ent->client->ps.stats[STAT_PLAYER_MP],
-		ent->client->ps.stats[STAT_PLAYER_MAX_MP]);
+		ent->client->ps.stats[STAT_PLAYER_MAX_MP],
+		questInfo,
+		ent->client->ps.stats[QUEST1],
+		ent->client->ps.stats[QUEST1Goal],
+		ent->client->ps.stats[STAT_PLAYER_LEVEL],
+		ent->client->ps.stats[QUEST2Goal]);
 
 	gi.WriteByte(svc_layout);
 	gi.WriteString(string);
@@ -547,6 +557,11 @@ void G_SetStats(edict_t* ent)
 	ent->client->ps.stats[STAT_PLAYER_MP] = ent->client->pers.playerMP;
 	ent->client->ps.stats[STAT_PLAYER_MAX_MP] = ent->client->pers.maxMP;
 
+	//QUEST1
+	ent->client->ps.stats[QUEST1] = ent->client->pers.questKills;
+	ent->client->ps.stats[QUEST1Goal] = ent->client->pers.questKillTarget;
+	//QUEST2
+	ent->client->ps.stats[QUEST2Goal] = ent->client->pers.questLevelTarget;
 
 }
 

@@ -738,3 +738,30 @@ void swimmonster_start (edict_t *self)
 	self->think = swimmonster_start_go;
 	monster_start (self);
 }
+
+//============================================================================
+//					FANTASY MOD STUFF
+//============================================================================
+
+void RewardPlayerEXP(edict_t* attacker) {
+	if (attacker && attacker->client) { // Ensure the attacker is a player
+		attacker->client->pers.playerEXP += 1; // Award 1 EXP
+		Com_Printf("Player gained 1 EXP! Total EXP: %d\n", attacker->client->pers.playerEXP);
+
+		CheckPlayerLevelUp(attacker); // Call level-up logic if needed
+		if (attacker && attacker->client) {
+			// Increment quest kill count
+			gclient_t* client = attacker->client;
+
+			if (!client->pers.quest1Complete) {
+				client->pers.questKills++;
+
+				// Check if the quest is complete
+				if (client->pers.questKills >= client->pers.questKillTarget) {
+					client->pers.quest1Complete = true;
+					Com_Printf("Quest Complete! You have reached %d kills.\n", client->pers.questKillTarget);
+				}
+			}
+		}
+	}
+}

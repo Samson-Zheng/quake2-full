@@ -1190,6 +1190,12 @@ void soldier_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 		self->monsterinfo.currentmove = &soldier_move_death5;
 	else
 		self->monsterinfo.currentmove = &soldier_move_death6;
+
+
+	//=====================
+	//	FANTASY MOD STUFF
+	//=====================
+	RewardPlayerEXP(attacker);
 }
 
 
