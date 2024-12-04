@@ -315,7 +315,6 @@ void HelpComputer(edict_t* ent)
 	// send the layout
 	char* questInfo;
 	questInfo = "Clear your surroundings \nStrengthen yourself \nMaster your magic";
-	//You awoke with no memories of yourself surrounded by enemies and your innate magic skill. You must first clear your surroundings, strengthen yourself, and test your magic
 	Com_sprintf(string, sizeof(string),
 		//"xv 32 yv 8 picn help "			// background
 		//"xv 202 yv 12 string2 \"%s\" "		//skill

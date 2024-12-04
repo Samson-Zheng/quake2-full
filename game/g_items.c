@@ -1296,7 +1296,7 @@ always owned, never in the world
 		Weapon_Blaster,
 		"misc/w_pkup.wav",
 		NULL, 0,
-		"models/weapons/v_blast/tris.md2",
+		"models/weapons/v_blast/v_dagger.md2", // Was "models/weapons/v_blast/tris.md2",
 /* icon */		"w_blaster",
 /* pickup */	"Blaster",
 		0,
@@ -2126,7 +2126,7 @@ void SP_item_health (edict_t *self)
 		return;
 	}
 
-	self->model = "models/items/healing/medium/tris.md2";
+	self->model = "models/items/healing/medium/bottle1.md2";
 	self->count = 10;
 	SpawnItem (self, FindItem ("Health"));
 	gi.soundindex ("items/n_health.wav");
@@ -2142,7 +2142,7 @@ void SP_item_health_small (edict_t *self)
 		return;
 	}
 
-	self->model = "models/items/healing/stimpack/tris.md2";
+	self->model = "models/items/healing/stimpack/bread.md2";
 	self->count = 2;
 	SpawnItem (self, FindItem ("Health"));
 	self->style = HEALTH_IGNORE_MAX;
@@ -2159,7 +2159,7 @@ void SP_item_health_large (edict_t *self)
 		return;
 	}
 
-	self->model = "models/items/healing/large/tris.md2";
+	self->model = "models/items/healing/large/bottle1.md2";
 	self->count = 25;
 	SpawnItem (self, FindItem ("Health"));
 	gi.soundindex ("items/l_health.wav");
