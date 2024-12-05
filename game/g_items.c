@@ -558,8 +558,20 @@ qboolean Pickup_Health (edict_t *ent, edict_t *other)
 	if (!(ent->style & HEALTH_IGNORE_MAX))
 		if (other->health >= other->max_health)
 			return false;
-
+	// FANTASY MOD HERE
+	other->client->pers.playerMP += ent->count;
+	if (other->client->pers.playerMP >= other->client->pers.maxMP)
+		other->client->pers.playerMP = other->client->pers.playerMP - (other->client->pers.playerMP - other->client->pers.maxMP);
+	
+	if (ent->count == 2)
+		Com_Printf("You ate a magic bread!\nIt healed you for 2 HP and MP\n");
+	else if (ent->count == 10)
+		Com_Printf("You drank a magic potion!\nIt healed you for 10 HP and MP\n");
+	else if (ent->count == 25)
+		Com_Printf("You used a magic tome!\nIt healed you for 25 HP and MP\n");
+	// END OF FANTASY MOD
 	other->health += ent->count;
+
 
 	if (!(ent->style & HEALTH_IGNORE_MAX))
 	{
@@ -2159,7 +2171,7 @@ void SP_item_health_large (edict_t *self)
 		return;
 	}
 
-	self->model = "models/items/healing/large/bottle1.md2";
+	self->model = "models/items/healing/large/flask.md2";
 	self->count = 25;
 	SpawnItem (self, FindItem ("Health"));
 	gi.soundindex ("items/l_health.wav");
