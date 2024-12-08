@@ -813,35 +813,87 @@ BLASTER / HYPERBLASTER
 ======================================================================
 */
 
-void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
+//void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
+//{
+//	vec3_t	forward, right;
+//	vec3_t	start;
+//	vec3_t	offset;
+//
+//	if (is_quad)
+//		damage *= 4;
+//	AngleVectors (ent->client->v_angle, forward, right, NULL);
+//	VectorSet(offset, 24, 8, ent->viewheight-8);
+//	VectorAdd (offset, g_offset, offset);
+//	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+//
+//	VectorScale (forward, -2, ent->client->kick_origin);
+//	ent->client->kick_angles[0] = -1;
+//
+//	fire_blaster (ent, start, forward, damage, 25, effect, hyper); //was fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+//
+//	// send muzzle flash
+//	gi.WriteByte (svc_muzzleflash);
+//	gi.WriteShort (ent-g_edicts);
+//	if (hyper)
+//		gi.WriteByte (MZ_HYPERBLASTER | is_silenced);
+//	else
+//		gi.WriteByte (MZ_BLASTER | is_silenced);
+//	gi.multicast (ent->s.origin, MULTICAST_PVS);
+//
+//	PlayerNoise(ent, start, PNOISE_WEAPON);
+//}
+void Blaster_Fire(edict_t* ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
 {
-	vec3_t	forward, right;
-	vec3_t	start;
-	vec3_t	offset;
+	vec3_t forward, right, start, end;
+	vec3_t offset;
+	trace_t tr;
 
 	if (is_quad)
 		damage *= 4;
-	AngleVectors (ent->client->v_angle, forward, right, NULL);
-	VectorSet(offset, 24, 8, ent->viewheight-8);
-	VectorAdd (offset, g_offset, offset);
-	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
-	VectorScale (forward, -2, ent->client->kick_origin);
-	ent->client->kick_angles[0] = -1;
+	// Get the direction the player is facing
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
 
-	fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+	// Determine the starting point of the hit scan
+	VectorSet(offset, 24, 8, ent->viewheight - 8);
+	VectorAdd(offset, g_offset, offset);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
 
-	// send muzzle flash
-	gi.WriteByte (svc_muzzleflash);
-	gi.WriteShort (ent-g_edicts);
-	if (hyper)
-		gi.WriteByte (MZ_HYPERBLASTER | is_silenced);
-	else
-		gi.WriteByte (MZ_BLASTER | is_silenced);
-	gi.multicast (ent->s.origin, MULTICAST_PVS);
+	// Determine the end point based on weapon range
+	VectorMA(start, 50, forward, end);
 
+	// Perform a trace to detect hits
+	tr = gi.trace(start, NULL, NULL, end, ent, MASK_SHOT);
+
+	// If we hit something, apply damage
+	if (tr.fraction < 1.0)
+	{
+		if (tr.ent->takedamage)
+		{
+			T_Damage(tr.ent, ent, ent, forward, tr.endpos, tr.plane.normal, damage, 1, DAMAGE_ENERGY, MOD_BLASTER);
+		}
+		else
+		{
+			// If it hits a surface, you can add an impact effect
+			gi.WriteByte(svc_temp_entity);
+			gi.WriteByte(TE_BLASTER);
+			gi.WritePosition(tr.endpos);
+			gi.WriteDir(tr.plane.normal);
+			gi.multicast(tr.endpos, MULTICAST_PVS);
+		}
+	}
+
+	// Play a firing sound and create a muzzle flash
+	gi.sound(ent, CHAN_WEAPON, gi.soundindex("weapons/moditems/hit.wav"), 1, ATTN_NORM, 0);
+	gi.WriteByte(svc_muzzleflash);
+	gi.WriteShort(ent - g_edicts);
+	gi.WriteByte(MZ_BLASTER | is_silenced);
+	gi.multicast(ent->s.origin, MULTICAST_PVS);
+
+	// Notify other players of the weapon noise
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 }
+
 
 
 void Weapon_Blaster_Fire (edict_t *ent)
@@ -950,19 +1002,109 @@ MACHINEGUN / CHAINGUN
 ======================================================================
 */
 
-void Machinegun_Fire (edict_t *ent)
+//void Machinegun_Fire (edict_t *ent)
+//{
+//	int	i;
+//	vec3_t		start;
+//	vec3_t		forward, right;
+//	vec3_t		angles;
+//	int			damage = 8;
+//	int			kick = 2;
+//	vec3_t		offset;
+//
+//	if (!(ent->client->buttons & BUTTON_ATTACK))
+//	{
+//		ent->client->machinegun_shots = 0;
+//		ent->client->ps.gunframe++;
+//		return;
+//	}
+//
+//	if (ent->client->ps.gunframe == 5)
+//		ent->client->ps.gunframe = 4;
+//	else
+//		ent->client->ps.gunframe = 5;
+//
+//	if (ent->client->pers.inventory[ent->client->ammo_index] < 1)
+//	{
+//		ent->client->ps.gunframe = 6;
+//		if (level.time >= ent->pain_debounce_time)
+//		{
+//			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/noammo.wav"), 1, ATTN_NORM, 0);
+//			ent->pain_debounce_time = level.time + 1;
+//		}
+//		NoAmmoWeaponChange (ent);
+//		return;
+//	}
+//
+//	if (is_quad)
+//	{
+//		damage *= 4;
+//		kick *= 4;
+//	}
+//
+//	for (i=1 ; i<3 ; i++)
+//	{
+//		ent->client->kick_origin[i] = crandom() * 0.35;
+//		ent->client->kick_angles[i] = crandom() * 0.7;
+//	}
+//	ent->client->kick_origin[0] = crandom() * 0.35;
+//	ent->client->kick_angles[0] = ent->client->machinegun_shots * -1.5;
+//
+//	// raise the gun as it is firing
+//	if (!deathmatch->value)
+//	{
+//		ent->client->machinegun_shots++;
+//		if (ent->client->machinegun_shots > 9)
+//			ent->client->machinegun_shots = 9;
+//	}
+//
+//	// get start / end positions
+//	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
+//	AngleVectors (angles, forward, right, NULL);
+//	VectorSet(offset, 0, 8, ent->viewheight-8);
+//	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+//	fire_bullet (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
+//
+//	gi.WriteByte (svc_muzzleflash);
+//	gi.WriteShort (ent-g_edicts);
+//	gi.WriteByte (MZ_MACHINEGUN | is_silenced);
+//	gi.multicast (ent->s.origin, MULTICAST_PVS);
+//
+//	PlayerNoise(ent, start, PNOISE_WEAPON);
+//
+//	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+//		ent->client->pers.inventory[ent->client->ammo_index]--;
+//
+//	ent->client->anim_priority = ANIM_ATTACK;
+//	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
+//	{
+//		ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
+//		ent->client->anim_end = FRAME_crattak9;
+//	}
+//	else
+//	{
+//		ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
+//		ent->client->anim_end = FRAME_attack8;
+//	}
+//}
+void Machinegun_Fire(edict_t* ent)
 {
-	int	i;
-	vec3_t		start;
-	vec3_t		forward, right;
-	vec3_t		angles;
-	int			damage = 8;
-	int			kick = 2;
-	vec3_t		offset;
+	vec3_t start;
+	vec3_t forward, right;
+	vec3_t angles;
+	vec3_t end;
+	trace_t tr;
+	int damage = 50; // Increased damage for a melee weapon
+	int kick = 10;   // Higher knockback for melee attacks
+	vec3_t offset;
+
+	// Cooldown system for attack speed
+	static float cooldown = 2;
+	if (level.time < ent->client->pers.lastFireTime + cooldown)
+		return;
 
 	if (!(ent->client->buttons & BUTTON_ATTACK))
 	{
-		ent->client->machinegun_shots = 0;
 		ent->client->ps.gunframe++;
 		return;
 	}
@@ -972,66 +1114,53 @@ void Machinegun_Fire (edict_t *ent)
 	else
 		ent->client->ps.gunframe = 5;
 
-	if (ent->client->pers.inventory[ent->client->ammo_index] < 1)
+	// Determine attack direction
+	VectorAdd(ent->client->v_angle, ent->client->kick_angles, angles);
+	AngleVectors(angles, forward, right, NULL);
+
+	// Determine start position
+	VectorSet(offset, 0, 8, ent->viewheight - 8);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	// Set end position with limited range of 75 units
+	VectorMA(start, 75, forward, end);
+	tr = gi.trace(start, NULL, NULL, end, ent, MASK_SHOT);
+
+	if (tr.fraction < 1.0)
 	{
-		ent->client->ps.gunframe = 6;
-		if (level.time >= ent->pain_debounce_time)
+		if (tr.ent->takedamage)
 		{
-			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/noammo.wav"), 1, ATTN_NORM, 0);
-			ent->pain_debounce_time = level.time + 1;
+			T_Damage(tr.ent, ent, ent, forward, tr.endpos, tr.plane.normal, damage, 1, DAMAGE_ENERGY, MOD_MACHINEGUN);
 		}
-		NoAmmoWeaponChange (ent);
-		return;
+		else
+		{
+			gi.WriteByte(svc_temp_entity);
+			gi.WriteByte(TE_SPARKS);
+			gi.WritePosition(tr.endpos);
+			gi.WriteDir(tr.plane.normal);
+			gi.multicast(tr.endpos, MULTICAST_PVS);
+		}
 	}
 
-	if (is_quad)
-	{
-		damage *= 4;
-		kick *= 4;
-	}
+	gi.sound(ent, CHAN_WEAPON, gi.soundindex("weapons/moditems/sword/miss1.wav"), 1, ATTN_NORM, 0);
 
-	for (i=1 ; i<3 ; i++)
-	{
-		ent->client->kick_origin[i] = crandom() * 0.35;
-		ent->client->kick_angles[i] = crandom() * 0.7;
-	}
-	ent->client->kick_origin[0] = crandom() * 0.35;
-	ent->client->kick_angles[0] = ent->client->machinegun_shots * -1.5;
-
-	// raise the gun as it is firing
-	if (!deathmatch->value)
-	{
-		ent->client->machinegun_shots++;
-		if (ent->client->machinegun_shots > 9)
-			ent->client->machinegun_shots = 9;
-	}
-
-	// get start / end positions
-	VectorAdd (ent->client->v_angle, ent->client->kick_angles, angles);
-	AngleVectors (angles, forward, right, NULL);
-	VectorSet(offset, 0, 8, ent->viewheight-8);
-	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_bullet (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
-
-	gi.WriteByte (svc_muzzleflash);
-	gi.WriteShort (ent-g_edicts);
-	gi.WriteByte (MZ_MACHINEGUN | is_silenced);
-	gi.multicast (ent->s.origin, MULTICAST_PVS);
-
-	PlayerNoise(ent, start, PNOISE_WEAPON);
-
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+	// Deduct ammo (if applicable)
+	if (!((int)dmflags->value & DF_INFINITE_AMMO))
 		ent->client->pers.inventory[ent->client->ammo_index]--;
 
+	// Set cooldown timer
+	ent->client->pers.lastFireTime = level.time;
+
+	// Animation
 	ent->client->anim_priority = ANIM_ATTACK;
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-		ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
+		ent->s.frame = FRAME_crattak1 - (int)(random() + 0.25);
 		ent->client->anim_end = FRAME_crattak9;
 	}
 	else
 	{
-		ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
+		ent->s.frame = FRAME_attack1 - (int)(random() + 0.25);
 		ent->client->anim_end = FRAME_attack8;
 	}
 }
@@ -1044,24 +1173,142 @@ void Weapon_Machinegun (edict_t *ent)
 	Weapon_Generic (ent, 3, 5, 45, 49, pause_frames, fire_frames, Machinegun_Fire);
 }
 
-void Chaingun_Fire (edict_t *ent)
+//void Chaingun_Fire (edict_t *ent)
+//{
+//	int			i;
+//	int			shots;
+//	vec3_t		start;
+//	vec3_t		forward, right, up;
+//	float		r, u;
+//	vec3_t		offset;
+//	int			damage;
+//	int			kick = 2;
+//
+//	if (deathmatch->value)
+//		damage = 6;
+//	else
+//		damage = 8;
+//
+//	if (ent->client->ps.gunframe == 5)
+//		gi.sound(ent, CHAN_AUTO, gi.soundindex("weapons/chngnu1a.wav"), 1, ATTN_IDLE, 0);
+//
+//	if ((ent->client->ps.gunframe == 14) && !(ent->client->buttons & BUTTON_ATTACK))
+//	{
+//		ent->client->ps.gunframe = 32;
+//		ent->client->weapon_sound = 0;
+//		return;
+//	}
+//	else if ((ent->client->ps.gunframe == 21) && (ent->client->buttons & BUTTON_ATTACK)
+//		&& ent->client->pers.inventory[ent->client->ammo_index])
+//	{
+//		ent->client->ps.gunframe = 15;
+//	}
+//	else
+//	{
+//		ent->client->ps.gunframe++;
+//	}
+//
+//	if (ent->client->ps.gunframe == 22)
+//	{
+//		ent->client->weapon_sound = 0;
+//		gi.sound(ent, CHAN_AUTO, gi.soundindex("weapons/chngnd1a.wav"), 1, ATTN_IDLE, 0);
+//	}
+//	else
+//	{
+//		ent->client->weapon_sound = gi.soundindex("weapons/chngnl1a.wav");
+//	}
+//
+//	ent->client->anim_priority = ANIM_ATTACK;
+//	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
+//	{
+//		ent->s.frame = FRAME_crattak1 - (ent->client->ps.gunframe & 1);
+//		ent->client->anim_end = FRAME_crattak9;
+//	}
+//	else
+//	{
+//		ent->s.frame = FRAME_attack1 - (ent->client->ps.gunframe & 1);
+//		ent->client->anim_end = FRAME_attack8;
+//	}
+//
+//	if (ent->client->ps.gunframe <= 9)
+//		shots = 1;
+//	else if (ent->client->ps.gunframe <= 14)
+//	{
+//		if (ent->client->buttons & BUTTON_ATTACK)
+//			shots = 2;
+//		else
+//			shots = 1;
+//	}
+//	else
+//		shots = 3;
+//
+//	if (ent->client->pers.inventory[ent->client->ammo_index] < shots)
+//		shots = ent->client->pers.inventory[ent->client->ammo_index];
+//
+//	if (!shots)
+//	{
+//		if (level.time >= ent->pain_debounce_time)
+//		{
+//			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/noammo.wav"), 1, ATTN_NORM, 0);
+//			ent->pain_debounce_time = level.time + 1;
+//		}
+//		NoAmmoWeaponChange (ent);
+//		return;
+//	}
+//
+//	if (is_quad)
+//	{
+//		damage *= 4;
+//		kick *= 4;
+//	}
+//
+//	for (i=0 ; i<3 ; i++)
+//	{
+//		ent->client->kick_origin[i] = crandom() * 0.35;
+//		ent->client->kick_angles[i] = crandom() * 0.7;
+//	}
+//
+//	for (i=0 ; i<shots ; i++)
+//	{
+//		// get start / end positions
+//		AngleVectors (ent->client->v_angle, forward, right, up);
+//		r = 7 + crandom()*4;
+//		u = crandom()*4;
+//		VectorSet(offset, 0, r, u + ent->viewheight-8);
+//		P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+//
+//		fire_bullet (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_CHAINGUN);
+//	}
+//
+//	// send muzzle flash
+//	gi.WriteByte (svc_muzzleflash);
+//	gi.WriteShort (ent-g_edicts);
+//	gi.WriteByte ((MZ_CHAINGUN1 + shots - 1) | is_silenced);
+//	gi.multicast (ent->s.origin, MULTICAST_PVS);
+//
+//	PlayerNoise(ent, start, PNOISE_WEAPON);
+//
+//	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+//		ent->client->pers.inventory[ent->client->ammo_index] -= shots;
+//}
+void Chaingun_Fire(edict_t* ent)
 {
-	int			i;
-	int			shots;
-	vec3_t		start;
-	vec3_t		forward, right, up;
-	float		r, u;
-	vec3_t		offset;
-	int			damage;
-	int			kick = 2;
-
+	vec3_t start;
+	vec3_t forward, right, up;
+	vec3_t offset;
+	trace_t tr;
+	int damage;
+	int kick = 2;
+	float range = 75;
+	static float cooldown = 0.5;
 	if (deathmatch->value)
 		damage = 6;
 	else
 		damage = 8;
+	if (level.time < ent->client->pers.lastFireTime + cooldown)
+		return;
 
-	if (ent->client->ps.gunframe == 5)
-		gi.sound(ent, CHAN_AUTO, gi.soundindex("weapons/chngnu1a.wav"), 1, ATTN_IDLE, 0);
+	ent->client->pers.lastFireTime = level.time;
 
 	if ((ent->client->ps.gunframe == 14) && !(ent->client->buttons & BUTTON_ATTACK))
 	{
@@ -1069,8 +1316,7 @@ void Chaingun_Fire (edict_t *ent)
 		ent->client->weapon_sound = 0;
 		return;
 	}
-	else if ((ent->client->ps.gunframe == 21) && (ent->client->buttons & BUTTON_ATTACK)
-		&& ent->client->pers.inventory[ent->client->ammo_index])
+	else if ((ent->client->ps.gunframe == 21) && (ent->client->buttons & BUTTON_ATTACK))
 	{
 		ent->client->ps.gunframe = 15;
 	}
@@ -1082,11 +1328,11 @@ void Chaingun_Fire (edict_t *ent)
 	if (ent->client->ps.gunframe == 22)
 	{
 		ent->client->weapon_sound = 0;
-		gi.sound(ent, CHAN_AUTO, gi.soundindex("weapons/chngnd1a.wav"), 1, ATTN_IDLE, 0);
+		gi.sound(ent, CHAN_AUTO, gi.soundindex("weapons/moditems/shovel/miss1.wav"), 1, ATTN_IDLE, 0);
 	}
 	else
 	{
-		ent->client->weapon_sound = gi.soundindex("weapons/chngnl1a.wav");
+		ent->client->weapon_sound = gi.soundindex("weapons/moditems/shovel/miss1.wav");
 	}
 
 	ent->client->anim_priority = ANIM_ATTACK;
@@ -1101,68 +1347,32 @@ void Chaingun_Fire (edict_t *ent)
 		ent->client->anim_end = FRAME_attack8;
 	}
 
-	if (ent->client->ps.gunframe <= 9)
-		shots = 1;
-	else if (ent->client->ps.gunframe <= 14)
-	{
-		if (ent->client->buttons & BUTTON_ATTACK)
-			shots = 2;
-		else
-			shots = 1;
-	}
-	else
-		shots = 3;
+	AngleVectors(ent->client->v_angle, forward, right, up);
+	VectorSet(offset, 0, 8, ent->viewheight - 8);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
 
-	if (ent->client->pers.inventory[ent->client->ammo_index] < shots)
-		shots = ent->client->pers.inventory[ent->client->ammo_index];
+	vec3_t end;
+	VectorMA(start, range, forward, end);
 
-	if (!shots)
+	tr = gi.trace(start, NULL, NULL, end, ent, MASK_SHOT);
+
+	if (tr.fraction < 1.0)
 	{
-		if (level.time >= ent->pain_debounce_time)
+		if (tr.ent->takedamage)
 		{
-			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/noammo.wav"), 1, ATTN_NORM, 0);
-			ent->pain_debounce_time = level.time + 1;
+			T_Damage(tr.ent, ent, ent, forward, tr.endpos, tr.plane.normal, damage, 1, DAMAGE_ENERGY, MOD_CHAINGUN);
 		}
-		NoAmmoWeaponChange (ent);
-		return;
+		else
+		{
+			gi.WriteByte(svc_temp_entity);
+			gi.WriteByte(TE_SPARKS);
+			gi.WritePosition(tr.endpos);
+			gi.WriteDir(tr.plane.normal);
+			gi.multicast(tr.endpos, MULTICAST_PVS);
+		}
 	}
-
-	if (is_quad)
-	{
-		damage *= 4;
-		kick *= 4;
-	}
-
-	for (i=0 ; i<3 ; i++)
-	{
-		ent->client->kick_origin[i] = crandom() * 0.35;
-		ent->client->kick_angles[i] = crandom() * 0.7;
-	}
-
-	for (i=0 ; i<shots ; i++)
-	{
-		// get start / end positions
-		AngleVectors (ent->client->v_angle, forward, right, up);
-		r = 7 + crandom()*4;
-		u = crandom()*4;
-		VectorSet(offset, 0, r, u + ent->viewheight-8);
-		P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-
-		fire_bullet (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_CHAINGUN);
-	}
-
-	// send muzzle flash
-	gi.WriteByte (svc_muzzleflash);
-	gi.WriteShort (ent-g_edicts);
-	gi.WriteByte ((MZ_CHAINGUN1 + shots - 1) | is_silenced);
-	gi.multicast (ent->s.origin, MULTICAST_PVS);
-
-	PlayerNoise(ent, start, PNOISE_WEAPON);
-
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index] -= shots;
+	gi.sound(ent, CHAN_WEAPON, gi.soundindex("weapons/moditems/shovel/miss1.wav"), 1, ATTN_NORM, 0);
 }
-
 
 void Weapon_Chaingun (edict_t *ent)
 {

@@ -878,6 +878,7 @@ typedef struct
 	qboolean quest2Complete; // Whether the quest 2 is completed
 	int magicCasts; // Current number of magic casted
 	qboolean quest3Complete; // Whether the quest 3 is completed
+	float lastFireTime; // Time of the last attack
 
 } client_persistant_t;
 

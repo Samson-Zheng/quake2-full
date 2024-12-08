@@ -638,6 +638,7 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.quest1Complete = false; // Quest not completed initially
 	client->pers.questLevelTarget = 3;       // Target level for the quest
 	client->pers.quest1Complete = false; // Quest not completed initially
+	client->pers.lastFireTime = 0.0f; //Cooldown
 
 }
 

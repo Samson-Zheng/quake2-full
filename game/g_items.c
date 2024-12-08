@@ -558,8 +558,20 @@ qboolean Pickup_Health (edict_t *ent, edict_t *other)
 	if (!(ent->style & HEALTH_IGNORE_MAX))
 		if (other->health >= other->max_health)
 			return false;
-
+	// FANTASY MOD HERE
+	other->client->pers.playerMP += ent->count;
+	if (other->client->pers.playerMP >= other->client->pers.maxMP)
+		other->client->pers.playerMP = other->client->pers.playerMP - (other->client->pers.playerMP - other->client->pers.maxMP);
+	
+	if (ent->count == 2)
+		Com_Printf("You ate a magic bread!\nIt healed you for 2 HP and MP\n");
+	else if (ent->count == 10)
+		Com_Printf("You drank a magic potion!\nIt healed you for 10 HP and MP\n");
+	else if (ent->count == 25)
+		Com_Printf("You used a magic tome!\nIt healed you for 25 HP and MP\n");
+	// END OF FANTASY MOD
 	other->health += ent->count;
+
 
 	if (!(ent->style & HEALTH_IGNORE_MAX))
 	{
@@ -1219,7 +1231,7 @@ gitem_t	itemlist[] =
 		NULL,
 		NULL,
 		"misc/ar2_pkup.wav",
-		"models/items/armor/shard/tris.md2", EF_ROTATE,
+		"models/items/armor/moditems/garmour.md2", EF_ROTATE,//"models/items/armor/shard/tris.md2", EF_ROTATE,
 		NULL,
 /* icon */		"i_jacketarmor",
 /* pickup */	"Armor Shard",
@@ -1294,7 +1306,7 @@ always owned, never in the world
 		Use_Weapon,
 		NULL,
 		Weapon_Blaster,
-		"misc/w_pkup.wav",
+		"misc/moditems/arm.wav",//"misc/w_pkup.wav",
 		NULL, 0,
 		"models/weapons/v_blast/v_dagger.md2", // Was "models/weapons/v_blast/tris.md2",
 /* icon */		"w_blaster",
@@ -1306,7 +1318,7 @@ always owned, never in the world
 		WEAP_BLASTER,
 		NULL,
 		0,
-/* precache */ "weapons/blastf1a.wav misc/lasfly.wav"
+/* precache */ "weapons/moditems/hit.wav weapons/moditems/miss.wav" //"weapons/blastf1a.wav misc/lasfly.wav"
 	},
 
 /*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16)
@@ -1318,8 +1330,8 @@ always owned, never in the world
 		Drop_Weapon,
 		Weapon_Shotgun,
 		"misc/w_pkup.wav",
-		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
-		"models/weapons/v_shotg/tris.md2",
+		"models/weapons/g_shotg/g_bow.md2", EF_ROTATE,//"models/weapons/g_shotg/tris.md2", EF_ROTATE,
+		"models/weapons/v_shotg/v_bow.md2",//"models/weapons/v_shotg/tris.md2",
 /* icon */		"w_shotgun",
 /* pickup */	"Shotgun",
 		0,
@@ -1341,8 +1353,8 @@ always owned, never in the world
 		Drop_Weapon,
 		Weapon_SuperShotgun,
 		"misc/w_pkup.wav",
-		"models/weapons/g_shotg2/tris.md2", EF_ROTATE,
-		"models/weapons/v_shotg2/tris.md2",
+		"models/weapons/g_shotg2/g_xbow.md2", EF_ROTATE,//"models/weapons/g_shotg2/tris.md2", EF_ROTATE,
+		"models/weapons/v_shotg2/v_xbow.md2",//"models/weapons/v_shotg2/tris.md2",
 /* icon */		"w_sshotgun",
 /* pickup */	"Super Shotgun",
 		0,
@@ -1364,8 +1376,8 @@ always owned, never in the world
 		Drop_Weapon,
 		Weapon_Machinegun,
 		"misc/w_pkup.wav",
-		"models/weapons/g_machn/tris.md2", EF_ROTATE,
-		"models/weapons/v_machn/tris.md2",
+		"models/weapons/g_machn/g_sword.md2", EF_ROTATE,//"models/weapons/g_machn/tris.md2", EF_ROTATE,
+		"models/weapons/v_machn/v_sword.md2",//"models/weapons/v_machn/tris.md2",
 /* icon */		"w_machinegun",
 /* pickup */	"Machinegun",
 		0,
@@ -1388,7 +1400,7 @@ always owned, never in the world
 		Weapon_Chaingun,
 		"misc/w_pkup.wav",
 		"models/weapons/g_chain/tris.md2", EF_ROTATE,
-		"models/weapons/v_chain/tris.md2",
+		"models/weapons/v_chain/v_shovel.md2",//"models/weapons/v_chain/tris.md2",
 /* icon */		"w_chaingun",
 /* pickup */	"Chaingun",
 		0,
@@ -1552,7 +1564,7 @@ always owned, never in the world
 		Drop_Ammo,
 		NULL,
 		"misc/am_pkup.wav",
-		"models/items/ammo/shells/medium/tris.md2", 0,
+		"models/items/ammo/moditems/statue.md2", 0,//"models/items/ammo/shells/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_shells",
 /* pickup */	"Shells",
@@ -1575,7 +1587,7 @@ always owned, never in the world
 		Drop_Ammo,
 		NULL,
 		"misc/am_pkup.wav",
-		"models/items/ammo/bullets/medium/tris.md2", 0,
+		"models/items/ammo/moditems/statue.md2", 0,//"models/items/ammo/bullets/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_bullets",
 /* pickup */	"Bullets",
@@ -1598,7 +1610,7 @@ always owned, never in the world
 		Drop_Ammo,
 		NULL,
 		"misc/am_pkup.wav",
-		"models/items/ammo/cells/medium/tris.md2", 0,
+		"models/items/ammo/moditems/statue.md2", 0,//"models/items/ammo/cells/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_cells",
 /* pickup */	"Cells",
@@ -1621,7 +1633,7 @@ always owned, never in the world
 		Drop_Ammo,
 		NULL,
 		"misc/am_pkup.wav",
-		"models/items/ammo/rockets/medium/tris.md2", 0,
+		"models/items/ammo/moditems/statue.md2", 0,//"models/items/ammo/rockets/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_rockets",
 /* pickup */	"Rockets",
@@ -1644,7 +1656,7 @@ always owned, never in the world
 		Drop_Ammo,
 		NULL,
 		"misc/am_pkup.wav",
-		"models/items/ammo/slugs/medium/tris.md2", 0,
+		"models/items/ammo/moditems/statue.md2", 0,//"models/items/ammo/slugs/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_slugs",
 /* pickup */	"Slugs",
@@ -2159,7 +2171,7 @@ void SP_item_health_large (edict_t *self)
 		return;
 	}
 
-	self->model = "models/items/healing/large/bottle1.md2";
+	self->model = "models/items/healing/large/flask.md2";
 	self->count = 25;
 	SpawnItem (self, FindItem ("Health"));
 	gi.soundindex ("items/l_health.wav");
