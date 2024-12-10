@@ -1,4 +1,14 @@
+Finals Delieverables
 
+1. Quake Weapons replaced with Fantasy weapons
+
+2. 5 Fantasy spells that can be learned separate form weapons
+
+3. 5 Fantasy themed items
+
+4. Upgradeable stats
+
+5. 3 Quests that can be achieved through out a level
 This is a fantasy themed rpg mod for Quake II.
 
 Installation
