@@ -1,6 +1,6 @@
 Finals Delieverables
 
-1. Quake Weapons replaced with Fantasy weapons
+1. 10 Quake Weapons replaced with Fantasy weapons
 
 2. 5 Fantasy spells that can be learned separate form weapons
 
