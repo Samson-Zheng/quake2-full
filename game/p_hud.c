@@ -314,7 +314,7 @@ void HelpComputer(edict_t* ent)
 		sk = "hard+";
 	// send the layout
 	char* questInfo;
-	questInfo = "Clear your surroundings \nStrengthen yourself \nMaster your magic";
+	questInfo = "Clear your surroundings \nStrengthen yourself \nMaster your magic HJKLU";
 	Com_sprintf(string, sizeof(string),
 		//"xv 32 yv 8 picn help "			// background
 		//"xv 202 yv 12 string2 \"%s\" "		//skill
